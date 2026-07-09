@@ -1,13 +1,17 @@
 # NanoServiceFlow — Parametric Logo System
 
-A **single-file, zero-dependency web tool** for generating the NanoServiceFlow
-brand logo and its per-module variants. Everything — UI, geometry math, and the
+A **single-file, zero-dependency web tool** for generating the
+[NanoServiceFlow](https://github.com/aim4code/nanoserviceflow) brand logo and its
+per-module variants. Everything — UI, geometry math, and the
 SVG renderer — lives in one self-contained HTML file that runs entirely in the
 browser. There is **no build step, no server, and no package manager**.
 
+![NanoServiceFlow Parametric Logo System — the web tool](docs/screenshot.png)
+
 ## Purpose & background
 
-This tool was created to provide a logo for the **NanoServiceFlow** library and,
+This tool was created to provide a logo for the
+[**NanoServiceFlow**](https://github.com/aim4code/nanoserviceflow) library and,
 just as importantly, to give a **consistent look across all the different module
 libraries that extend it**. Rather than hand-drawing a separate mark for each
 module, the logo is generated parametrically so every module shares the same core
