@@ -83,9 +83,14 @@ Any static server works (`npx serve`, `php -S localhost:8000`, etc.).
 ```
 .
 ├── NanoServiceFlow Logo.html   # the entire application (UI + renderer)
+├── docs/
+│   └── screenshot.png          # tool screenshot used in this README
+├── .claude/
+│   └── launch.json             # optional: local static-preview config
 ├── LICENSE                     # MIT
+├── CHANGELOG.md
 ├── README.md
-└── .claude/launch.json         # optional: local static-preview config
+└── .gitignore
 ```
 
 ## Development
