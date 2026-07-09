@@ -1,0 +1,39 @@
+# --- OS files ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# --- Editor / IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# --- Logs & temp ---
+*.log
+*.tmp
+*.pid
+*.seed
+
+# --- Optional Node tooling (if a static server / formatter is added later) ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm/
+.cache/
+
+# --- Local static-server / preview output ---
+dist/
+build/
+
+# --- Claude Code local overrides (keep shared launch.json tracked) ---
+.claude/settings.local.json

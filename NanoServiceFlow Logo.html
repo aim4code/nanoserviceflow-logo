@@ -1,0 +1,1650 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NanoServiceFlow — Parametric Logo System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0B1220;
+    --panel: #0F172A;
+    --panel-2: #131B2E;
+    --border: #1E2A44;
+    --muted: #8A95AC;
+    --text: #E6ECF5;
+    --accent: #2B8FE8;
+    --accent-2: #2EE59D;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: radial-gradient(1200px 800px at 80% -10%, #122036 0%, #0B1220 60%) fixed;
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    min-height: 100vh;
+  }
+  .app {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    min-height: 100vh;
+  }
+  /* -------- Sidebar -------- */
+  aside {
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    padding: 28px 24px 40px;
+    overflow-y: auto;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .brand-dot {
+    width: 10px; height: 10px; border-radius: 2px;
+    background: linear-gradient(135deg, #2EE59D, #2B8FE8);
+    box-shadow: 0 0 12px rgba(46, 229, 157, 0.4);
+  }
+  .brand-title { font-weight: 700; font-size: 14px; letter-spacing: 0.5px; }
+  .brand-sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+  .section {
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section:last-child { border-bottom: none; }
+  .section h3 {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 14px;
+  }
+  label.row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 13px;
+  }
+  label.row span.lbl { color: var(--text); }
+  label.row span.hint { color: var(--muted); font-size: 11px; }
+
+  /* Range slider styling */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--panel-2);
+    border-radius: 2px;
+    outline: none;
+    margin: 6px 0 0 0;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px; height: 14px;
+    background: linear-gradient(135deg, #2EE59D, #2B8FE8);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid var(--panel);
+    box-shadow: 0 0 0 1px var(--border);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 12px; height: 12px;
+    background: linear-gradient(135deg, #2EE59D, #2B8FE8);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid var(--panel);
+  }
+  .slider-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .slider-row .lbl { font-size: 12px; color: var(--text); }
+  .slider-row .val {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    color: var(--muted); min-width: 38px; text-align: right;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 11px;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 13px;
+    outline: none;
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+
+  textarea {
+    width: 100%;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    resize: vertical;
+    min-height: 88px;
+    outline: none;
+  }
+  textarea:focus { border-color: var(--accent); }
+
+  .color-pair {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 10px;
+  }
+  .color-pair input[type="color"] {
+    width: 28px; height: 28px;
+    border: none; background: transparent; padding: 0;
+    cursor: pointer;
+  }
+  .color-pair input[type="text"] {
+    border: none; background: transparent; padding: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    width: 90px;
+  }
+
+  /* Switch */
+  .switch {
+    position: relative;
+    width: 40px; height: 22px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .switch::after {
+    content: '';
+    position: absolute;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--muted);
+    top: 2px; left: 2px;
+    transition: all 0.2s;
+  }
+  .switch.on { background: rgba(43, 143, 232, 0.3); border-color: var(--accent); }
+  .switch.on::after { left: 20px; background: var(--accent); }
+
+  /* Presets */
+  .presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .preset {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 8px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text);
+    transition: all 0.15s;
+    display: flex; flex-direction: column; gap: 6px; align-items: center;
+  }
+  .preset:hover { border-color: #334770; transform: translateY(-1px); }
+  .preset.active { border-color: var(--accent); background: #142038; }
+  .preset .swatch {
+    width: 24px; height: 24px; border-radius: 6px;
+  }
+  .preset .name { font-weight: 500; }
+  .preset { position: relative; }
+  .preset .del-btn {
+    position: absolute; top: 3px; right: 3px;
+    width: 15px; height: 15px; border-radius: 50%;
+    background: var(--panel); border: 1px solid var(--border);
+    color: var(--muted); font-size: 10px; line-height: 13px;
+    text-align: center; cursor: pointer; display: none;
+  }
+  .preset:hover .del-btn { display: block; }
+  .preset .del-btn:hover { color: #fff; border-color: #EF4444; background: #EF4444; }
+
+  /* Icon picker */
+  .icons {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+  }
+  .icon-btn {
+    aspect-ratio: 1;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    display: grid; place-items: center;
+    color: var(--text);
+    transition: all 0.15s;
+  }
+  .icon-btn:hover { border-color: #334770; }
+  .icon-btn.active { border-color: var(--accent); background: #142038; color: var(--accent); }
+  .icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* Stage */
+  main { padding: 40px 48px 80px; overflow-y: auto; }
+  .toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 28px;
+  }
+  .toolbar .mode-toggles {
+    display: inline-flex;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .toolbar button.bg-btn {
+    background: transparent; border: none; color: var(--muted);
+    padding: 7px 14px; border-radius: 7px; cursor: pointer;
+    font: inherit; font-size: 12px; font-weight: 500;
+  }
+  .toolbar button.bg-btn.active { background: var(--panel-2); color: var(--text); }
+
+  .export-group { display: flex; gap: 8px; }
+  .btn {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 16px;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: all 0.15s;
+  }
+  .btn:hover { border-color: #334770; }
+  .btn.primary {
+    background: linear-gradient(135deg, #2EE59D22, #2B8FE822);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .btn.primary:hover { background: linear-gradient(135deg, #2EE59D33, #2B8FE833); }
+
+  .canvas-wrap {
+    display: flex; flex-direction: column; gap: 24px;
+  }
+  .canvas {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    background: #0A1020;
+    position: relative;
+  }
+  .canvas.light { background: #F7F8FA; }
+  .canvas.dark { background: #0B1220; }
+  .canvas.transparent {
+    background-color: #6B7280;
+    background-image:
+      linear-gradient(45deg, #9CA3AF 25%, transparent 25%),
+      linear-gradient(-45deg, #9CA3AF 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #9CA3AF 75%),
+      linear-gradient(-45deg, transparent 75%, #9CA3AF 75%);
+    background-size: 22px 22px;
+    background-position: 0 0, 0 11px, 11px -11px, -11px 0;
+  }
+  .canvas .stage-label {
+    position: absolute;
+    top: 14px; left: 18px;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .canvas .render {
+    padding: 40px 32px;
+    display: grid; place-items: center;
+    min-height: 260px;
+  }
+  .canvas.light .stage-label { color: #6B7280; }
+  .canvas .render svg { max-width: 100%; height: auto; }
+
+  /* Variants grid */
+  .variants {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+  .variant {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--panel);
+  }
+  .variant-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .variant .render-small {
+    padding: 22px 14px;
+    display: grid; place-items: center;
+    min-height: 120px;
+  }
+  .variant.light-v .render-small { background: #F7F8FA; }
+  .variant.dark-v .render-small { background: #0B1220; }
+  .variant.trans-v .render-small {
+    background-color: #6B7280;
+    background-image:
+      linear-gradient(45deg, #9CA3AF 25%, transparent 25%),
+      linear-gradient(-45deg, #9CA3AF 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #9CA3AF 75%),
+      linear-gradient(-45deg, transparent 75%, #9CA3AF 75%);
+    background-size: 14px 14px;
+    background-position: 0 0, 0 7px, 7px -7px, -7px 0;
+  }
+  .variant .render-small svg { max-width: 92%; height: auto; }
+
+  /* Mark-only variants */
+  .mark-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  }
+  .mark-cell {
+    aspect-ratio: 1;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: grid; place-items: center;
+    padding: 16px;
+  }
+  .mark-cell.light-v { background: #F7F8FA; }
+  .mark-cell.dark-v { background: #0B1220; }
+  .mark-cell.trans-v {
+    background-color: #6B7280;
+    background-image:
+      linear-gradient(45deg, #9CA3AF 25%, transparent 25%),
+      linear-gradient(-45deg, #9CA3AF 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #9CA3AF 75%),
+      linear-gradient(-45deg, transparent 75%, #9CA3AF 75%);
+    background-size: 12px 12px;
+    background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+  }
+  .mark-cell.mono-v { background: #FFFFFF; }
+  .mark-cell svg { width: 100%; height: auto; }
+
+  h2.stage-title {
+    font-size: 12px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    margin: 24px 0 12px;
+  }
+
+  .hint-box {
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    line-height: 1.5;
+  }
+  .hint-box code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--panel-2);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--text);
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar: controls -->
+  <aside>
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <div>
+        <div class="brand-title">NSF Logo System</div>
+        <div class="brand-sub">Parametric • module-aware</div>
+      </div>
+    </div>
+
+    <!-- Mode -->
+    <div class="section">
+      <h3>Mode</h3>
+      <label class="row">
+        <span class="lbl">Module mode</span>
+        <div class="switch" id="switch-module"></div>
+      </label>
+      <div class="hint-box" id="mode-hint">
+        Off = standard logo. On = shows a highlighted module hex + subtitle.
+      </div>
+    </div>
+
+    <!-- Presets -->
+    <div class="section" id="presets-section">
+      <h3>
+        <span style="display:flex; align-items:center; justify-content:space-between;">
+          <span>Module presets</span>
+          <button class="btn" id="save-preset-btn" style="padding:4px 10px; font-size:11px; text-transform:none; letter-spacing:0; font-weight:500;">+ Save current</button>
+        </span>
+      </h3>
+      <div class="presets" id="presets"></div>
+    </div>
+
+    <!-- Setup export/import -->
+    <div class="section" id="setup-section">
+      <h3>Setup</h3>
+      <div style="display:flex; gap:8px;">
+        <button class="btn" id="export-setup-btn" style="flex:1; justify-content:center;">Export setup</button>
+        <button class="btn" id="import-setup-btn" style="flex:1; justify-content:center;">Import setup</button>
+      </div>
+      <input type="file" id="import-setup-file" accept="application/json" style="display:none;">
+      <div class="hint-box" style="margin-top:10px;">
+        Export saves all parameters (colors, geometry, text, custom presets) to a JSON file. Import loads a previously exported file.
+      </div>
+    </div>
+
+    <!-- Module params -->
+    <div class="section" id="module-params">
+      <h3>Module parameters</h3>
+      <label class="row">
+        <span class="lbl">Name (subtitle)</span>
+      </label>
+      <input type="text" id="module-name" value="UI MODULE" style="margin-bottom:14px;">
+
+      <label class="row">
+        <span class="lbl">Primary color</span>
+      </label>
+      <div class="color-pair" style="margin-bottom:10px;">
+        <input type="color" id="module-primary-c" value="#8B5CF6">
+        <input type="text" id="module-primary-t" value="#8B5CF6">
+      </div>
+
+      <label class="row">
+        <span class="lbl">Secondary color</span>
+      </label>
+      <div class="color-pair" style="margin-bottom:14px;">
+        <input type="color" id="module-secondary-c" value="#EC4899">
+        <input type="text" id="module-secondary-t" value="#EC4899">
+      </div>
+
+      <label class="row">
+        <span class="lbl">Icon preset</span>
+      </label>
+      <div class="icons" id="icons"></div>
+      <label class="row" style="margin-top:12px;">
+        <span class="lbl">Custom icon SVG</span>
+        <span class="hint">Lucide paths</span>
+      </label>
+      <textarea id="module-icon" placeholder="<path d='...' /> in a 24x24 viewBox"></textarea>
+    </div>
+
+    <!-- Brand params -->
+    <div class="section">
+      <h3>Brand (base)</h3>
+      <label class="row">
+        <span class="lbl">Gradient start</span>
+      </label>
+      <div class="color-pair" style="margin-bottom:10px;">
+        <input type="color" id="brand-start-c" value="#2EE59D">
+        <input type="text" id="brand-start-t" value="#2EE59D">
+      </div>
+      <label class="row">
+        <span class="lbl">Gradient end</span>
+      </label>
+      <div class="color-pair">
+        <input type="color" id="brand-end-c" value="#2B8FE8">
+        <input type="text" id="brand-end-t" value="#2B8FE8">
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Geometry</h3>
+      <div style="margin-bottom:14px;">
+        <div class="slider-row">
+          <span class="lbl">Logo size</span>
+          <span class="val" id="size-val">240</span>
+        </div>
+        <input type="range" id="size-range" min="120" max="480" step="10" value="240">
+      </div>
+      <div style="margin-bottom:14px;">
+        <div class="slider-row">
+          <span class="lbl">Central module size</span>
+          <span class="val" id="core-val">1.00×</span>
+        </div>
+        <input type="range" id="core-range" min="0.5" max="1.6" step="0.05" value="1">
+      </div>
+      <div style="margin-bottom:14px;">
+        <div class="slider-row">
+          <span class="lbl">Module glow intensity</span>
+          <span class="val" id="glow-val">1.00×</span>
+        </div>
+        <input type="range" id="glow-range" min="0" max="2.5" step="0.1" value="1">
+      </div>
+      <div style="margin-bottom:14px;">
+        <div class="slider-row">
+          <span class="lbl">Module glow reach</span>
+          <span class="val" id="glow-reach-val">1.00×</span>
+        </div>
+        <input type="range" id="glow-reach-range" min="0" max="4" step="0.1" value="1">
+      </div>
+      <div style="margin-bottom:14px;">
+        <div class="slider-row">
+          <span class="lbl">Arm inset from core</span>
+          <span class="val" id="arm-val">1.00×</span>
+        </div>
+        <input type="range" id="arm-range" min="0" max="1.5" step="0.05" value="1">
+      </div>
+      <div style="margin-bottom:14px;">
+        <div class="slider-row">
+          <span class="lbl">"NanoServiceFlow" text size</span>
+          <span class="val" id="title-size-val">1.00×</span>
+        </div>
+        <input type="range" id="title-size-range" min="0.4" max="2" step="0.05" value="1">
+      </div>
+      <div>
+        <div class="slider-row">
+          <span class="lbl">Module name text size</span>
+          <span class="val" id="module-size-val">1.00×</span>
+        </div>
+        <input type="range" id="module-size-range" min="0.4" max="2" step="0.05" value="1">
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main stage -->
+  <main>
+    <div class="toolbar">
+      <div class="mode-toggles">
+        <button class="bg-btn" data-bg="transparent">Transparent</button>
+        <button class="bg-btn active" data-bg="dark">Dark</button>
+        <button class="bg-btn" data-bg="light">Light</button>
+      </div>
+      <div class="export-group">
+        <button class="btn" id="copy-svg">Copy SVG</button>
+        <button class="btn primary" id="download-svg">Download SVG</button>
+      </div>
+    </div>
+
+    <div class="canvas-wrap">
+      <!-- Primary stage -->
+      <div class="canvas dark" id="main-canvas">
+        <div class="stage-label" id="main-label">Primary</div>
+        <div class="render" id="main-render"></div>
+      </div>
+
+      <!-- Variants -->
+      <h2 class="stage-title">Background variants</h2>
+      <div class="variants">
+        <div class="variant trans-v">
+          <div class="variant-head"><span>Transparent</span><button class="btn" data-variant="transparent" data-kind="logo" style="padding:4px 10px; font-size:11px;">Download</button></div>
+          <div class="render-small" data-variant="transparent" data-kind="logo"></div>
+        </div>
+        <div class="variant dark-v">
+          <div class="variant-head"><span>Dark</span><button class="btn" data-variant="dark" data-kind="logo" style="padding:4px 10px; font-size:11px;">Download</button></div>
+          <div class="render-small" data-variant="dark" data-kind="logo"></div>
+        </div>
+        <div class="variant light-v">
+          <div class="variant-head"><span>Light</span><button class="btn" data-variant="light" data-kind="logo" style="padding:4px 10px; font-size:11px;">Download</button></div>
+          <div class="render-small" data-variant="light" data-kind="logo"></div>
+        </div>
+        <div class="variant" style="background:#FFFFFF;">
+          <div class="variant-head" style="color:#6B7280; border-bottom-color:#E5E7EB;"><span>Light (white)</span><button class="btn" data-variant="white" data-kind="logo" style="padding:4px 10px; font-size:11px; color:#374151;">Download</button></div>
+          <div class="render-small" data-variant="white" data-kind="logo" style="background:#FFFFFF;"></div>
+        </div>
+      </div>
+
+      <!-- Mark-only -->
+      <h2 class="stage-title">Mark only (symbol)</h2>
+      <div class="mark-grid">
+        <div class="mark-cell trans-v" data-variant="transparent" data-kind="mark"></div>
+        <div class="mark-cell dark-v" data-variant="dark" data-kind="mark"></div>
+        <div class="mark-cell light-v" data-variant="light" data-kind="mark"></div>
+        <div class="mark-cell mono-v" data-variant="white" data-kind="mark"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// Parametric NanoServiceFlow logo mark renderer
+// Builds SVG for the hex-chain "AS" mark, with optional highlighted module hex.
+
+(function () {
+  const NS = "http://www.w3.org/2000/svg";
+
+  function cubic(p0, p1, p2, p3, t) {
+    const mt = 1 - t;
+    return {
+      x: mt*mt*mt*p0.x + 3*mt*mt*t*p1.x + 3*mt*t*t*p2.x + t*t*t*p3.x,
+      y: mt*mt*mt*p0.y + 3*mt*mt*t*p1.y + 3*mt*t*t*p2.y + t*t*t*p3.y,
+    };
+  }
+  function cubicTangent(p0, p1, p2, p3, t) {
+    const mt = 1 - t;
+    const dx = 3*mt*mt*(p1.x-p0.x) + 6*mt*t*(p2.x-p1.x) + 3*t*t*(p3.x-p2.x);
+    const dy = 3*mt*mt*(p1.y-p0.y) + 6*mt*t*(p2.y-p1.y) + 3*t*t*(p3.y-p2.y);
+    return Math.atan2(dy, dx);
+  }
+
+  // ---- NSF LIGATURE GEOMETRY ----
+  // Three intertwined strokes: N (left), S (middle, overlapping), F (right, overlapping).
+  // Sampled along cubic beziers so we can place modules (hexagons) of varying sizes along them.
+  // Canvas: 260x220 viewBox. Leave room on right for F's fraying top-right terminal.
+
+  // N stroke: bottom-left up, diagonal down to bottom-right vertex, back up to top-right
+  const N_A = { x: 22,  y: 188 };   // bottom-left
+  const N_B = { x: 22,  y: 78 };
+  const N_C = { x: 30,  y: 32 };
+  const N_D = { x: 54,  y: 30 };    // top-left shoulder
+  const N_E = { x: 74,  y: 70 };
+  const N_F = { x: 86,  y: 150 };
+  const N_G = { x: 96,  y: 188 };   // bottom-right vertex
+  const N_H = { x: 92,  y: 120 };
+  const N_I = { x: 92,  y: 60 };
+  const N_J = { x: 96,  y: 32 };    // top-right
+
+  // S stroke: starts where N top-right lands, swoops through middle, ends at top of F
+  const S_A = { x: 116, y: 40 };
+  const S_B = { x: 168, y: 22 };
+  const S_C = { x: 96,  y: 92 };
+  const S_D = { x: 130, y: 112 };   // middle anchor
+  const S_E = { x: 198, y: 134 };
+  const S_F = { x: 150, y: 198 };
+  const S_G = { x: 110, y: 180 };
+
+  // F stroke: vertical spine on the right, crossbar going right (the classic F)
+  // Top of F curves in from upper area, ends degrading top-right
+  const F_A = { x: 146, y: 92 };    // lower on spine (overlaps S)
+  const F_B = { x: 162, y: 80 };
+  const F_C = { x: 182, y: 58 };
+  const F_D = { x: 198, y: 40 };    // top of spine
+  // Crossbar: from spine mid going right, degrading
+  const F_E = { x: 182, y: 62 };    // junction mid-spine
+  const F_F = { x: 206, y: 58 };
+  const F_G = { x: 230, y: 50 };    // crossbar-right (frays here)
+  // Top-right terminal that bubbles/degrades
+  const F_H = { x: 226, y: 36 };
+  const F_I = { x: 240, y: 26 };    // frayed end
+
+  // Sample N: dense
+  function pointsN() {
+    const pts = [];
+    // left leg: A -> B -> C -> D  (4 points)
+    for (let i = 0; i < 3; i++) {
+      const t = i / 3;
+      pts.push({ ...cubic(N_A, N_B, N_C, N_D, t), angle: cubicTangent(N_A, N_B, N_C, N_D, t), size: 1 + (i===0?0.15:0) });
+    }
+    // diagonal: D -> E -> F -> G (skip D)
+    for (let i = 1; i <= 3; i++) {
+      const t = i / 3;
+      pts.push({ ...cubic(N_D, N_E, N_F, N_G, t), angle: cubicTangent(N_D, N_E, N_F, N_G, t), size: i===2?1.25:1 });
+    }
+    // right leg: G -> H -> I -> J (skip G)
+    for (let i = 1; i <= 3; i++) {
+      const t = i / 3;
+      pts.push({ ...cubic(N_G, N_H, N_I, N_J, t), angle: cubicTangent(N_G, N_H, N_I, N_J, t), size: i===3?1.1:0.92 });
+    }
+    return pts;
+  }
+
+  // Sample S
+  function pointsS() {
+    const pts = [];
+    for (let i = 0; i < 3; i++) {
+      const t = i / 3;
+      pts.push({ ...cubic(S_A, S_B, S_C, S_D, t), angle: cubicTangent(S_A, S_B, S_C, S_D, t), size: i===0?1.4:0.95 });
+    }
+    for (let i = 1; i <= 3; i++) {
+      const t = i / 3;
+      pts.push({ ...cubic(S_D, S_E, S_F, S_G, t), angle: cubicTangent(S_D, S_E, S_F, S_G, t), size: i===2?1.15:0.9 });
+    }
+    return pts;
+  }
+
+  // Sample F (spine + short crossbar)
+  function pointsF() {
+    const pts = [];
+    // spine
+    for (let i = 0; i < 4; i++) {
+      const t = i / 3;
+      pts.push({ ...cubic(F_A, F_B, F_C, F_D, t), angle: cubicTangent(F_A, F_B, F_C, F_D, t), size: i===3?1.2:0.88 });
+    }
+    // crossbar (short)
+    for (let i = 1; i <= 2; i++) {
+      const t = i / 2;
+      pts.push({ ...cubic(F_E, F_F, F_G, F_H, t), angle: cubicTangent(F_E, F_F, F_G, F_H, t), size: 0.75 });
+    }
+    return pts;
+  }
+
+  function hexPath(cx, cy, r, rot = 0) {
+    const pts = [];
+    for (let i = 0; i < 6; i++) {
+      const a = rot + (Math.PI / 3) * i + Math.PI / 6;
+      pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]);
+    }
+    return "M " + pts.map(p => p[0].toFixed(2) + "," + p[1].toFixed(2)).join(" L ") + " Z";
+  }
+
+  function waveBars(cx, cy, r, seed = 1) {
+    const rng = mulberry32(seed * 97 + 13);
+    const n = 4;
+    const gap = r * 0.18;
+    const barW = r * 0.14;
+    const totalW = n * barW + (n - 1) * gap;
+    const startX = cx - totalW / 2 + barW / 2;
+    const bars = [];
+    for (let i = 0; i < n; i++) {
+      const h = r * (0.35 + rng() * 0.6);
+      bars.push({ x: startX + i * (barW + gap), y: cy - h / 2, w: barW, h });
+    }
+    return bars;
+  }
+
+  function mulberry32(a) {
+    return function() {
+      let t = a += 0x6D2B79F5;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  function el(tag, attrs = {}, children = []) {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) { if (attrs[k] != null) e.setAttribute(k, attrs[k]); }
+    for (const c of children) { if (c) e.appendChild(c); }
+    return e;
+  }
+
+  // ---------- Spiral mark helpers (Proposal 5) ----------
+  function _solidHex(uid, cx, cy, r, opts, extra) {
+    extra = extra || {};
+    const g = el("g");
+    const op = extra.opacity != null ? extra.opacity : 1;
+    if (extra.soft) {
+      g.appendChild(el("circle", { cx, cy, r: r * 1.5, fill: `url(#${uid}-brand)`, opacity: (0.22 * op).toFixed(2), filter: `url(#${uid}-glow)` }));
+    }
+    // Main solid hex
+    g.appendChild(el("path", {
+      d: hexPath(cx, cy, r, 0),
+      fill: `url(#${uid}-brand)`,
+      "stroke-linejoin": "round",
+      opacity: op,
+    }));
+    // First inset border
+    g.appendChild(el("path", {
+      d: hexPath(cx, cy, r * 0.82, 0),
+      fill: "none",
+      stroke: "#CFFAF0",
+      "stroke-width": Math.max(0.6, r * 0.09).toFixed(2),
+      "stroke-linejoin": "round",
+      opacity: (0.85 * op).toFixed(2),
+    }));
+    // Inner field
+    g.appendChild(el("path", {
+      d: hexPath(cx, cy, r * 0.72, 0),
+      fill: `url(#${uid}-brand)`,
+      "stroke-linejoin": "round",
+      opacity: op,
+    }));
+    // Center waveform glyph
+    if (!extra.empty && r >= 6) {
+      const bw = Math.max(0.9, r * 0.14);
+      const bars = [
+        { x: -r * 0.35, h: r * 0.35 },
+        { x: -r * 0.17, h: r * 0.6 },
+        { x: 0,         h: r * 0.9 },
+        { x:  r * 0.17, h: r * 0.6 },
+        { x:  r * 0.35, h: r * 0.35 },
+      ];
+      bars.forEach(b => {
+        g.appendChild(el("rect", {
+          x: (cx + b.x - bw / 2).toFixed(2),
+          y: (cy - b.h / 2).toFixed(2),
+          width: bw.toFixed(2),
+          height: b.h.toFixed(2),
+          rx: (bw / 2).toFixed(2),
+          fill: "#EAFFFB",
+          opacity: (0.9 * op).toFixed(2),
+        }));
+      });
+    } else if (!extra.empty) {
+      g.appendChild(el("circle", { cx, cy, r: (r * 0.22).toFixed(2), fill: "#EAFFFB", opacity: (0.85 * op).toFixed(2) }));
+    }
+    return g;
+  }
+
+  function _centralCell(uid, cx, cy, r, opts) {
+    const g = el("g");
+    const reach = opts.glowReach != null ? opts.glowReach : 1;
+    if (opts.moduleMode) {
+      // Halo radius scales with glowReach (1.7× baseline). Opacity falls off slightly as it spreads.
+      const haloR = r * (1.7 * reach);
+      const haloOpacity = Math.max(0.05, Math.min(0.45, 0.25 / Math.max(0.4, Math.sqrt(reach))));
+      g.appendChild(el("circle", { cx, cy, r: haloR.toFixed(2), fill: `url(#${uid}-mod)`, opacity: haloOpacity.toFixed(3), filter: `url(#${uid}-bigglow)` }));
+      g.appendChild(el("path", { d: hexPath(cx, cy, r, 0), fill: `url(#${uid}-mod-radial)`, stroke: `url(#${uid}-mod)`, "stroke-width": "2.4", "stroke-linejoin": "round" }));
+      g.appendChild(el("path", { d: hexPath(cx, cy, r * 0.85, 0), fill: "none", stroke: "#FFFFFF", "stroke-width": "1", opacity: "0.35", "stroke-linejoin": "round" }));
+      if (opts.moduleIcon) {
+        const iconSize = r * 1.2;
+        const iconG = el("g", {
+          transform: `translate(${cx - iconSize/2}, ${cy - iconSize/2}) scale(${iconSize/24})`,
+          stroke: "#FFFFFF", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round", fill: "none",
+        });
+        iconG.innerHTML = opts.moduleIcon;
+        g.appendChild(iconG);
+      }
+    } else {
+      const haloR = r * (1.5 * reach);
+      const haloOpacity = Math.max(0.04, Math.min(0.3, 0.15 / Math.max(0.4, Math.sqrt(reach))));
+      g.appendChild(el("circle", { cx, cy, r: haloR.toFixed(2), fill: `url(#${uid}-brand)`, opacity: haloOpacity.toFixed(3), filter: `url(#${uid}-bigglow)` }));
+      g.appendChild(el("path", { d: hexPath(cx, cy, r, 0), fill: `url(#${uid}-brand-soft)`, stroke: `url(#${uid}-brand)`, "stroke-width": "2.2", "stroke-linejoin": "round" }));
+      const t = el("text", {
+        x: cx, y: cy, "text-anchor": "middle", "dominant-baseline": "central",
+        "font-family": "'Inter', sans-serif", "font-size": (r * 0.7).toFixed(1),
+        "font-weight": "800", "letter-spacing": "0.5",
+        fill: `url(#${uid}-brand)`,
+      });
+      t.textContent = "NSF";
+      g.appendChild(t);
+    }
+    return g;
+  }
+
+  function buildMark(opts) {
+    const o = Object.assign({
+      brandStart: "#2EE59D", brandEnd: "#2B8FE8",
+      moduleMode: false, modulePrimary: "#8B5CF6", moduleSecondary: "#EC4899",
+      moduleIcon: "", highlightStroke: "S", highlightIndex: 0,
+      bg: "transparent", size: 240, uid: "mark",
+      // NEW parametric controls (all multipliers; 1.0 = baseline)
+      coreScale: 1.0,  // size of the central NSF/module hex
+      glowScale: 1.0,  // intensity/spread of glows around module + arms
+      glowReach: 1.0,  // how far the central module glow halo extends
+      armInset: 1.0,   // 0 = arms reach the core center; 1 = arms start at the module border (default)
+    }, opts);
+
+    const svg = el("svg", { xmlns: NS, viewBox: "0 0 240 240", width: o.size, height: o.size, "aria-label": "NanoServiceFlow mark" });
+
+    const uid = o.uid;
+    const defs = el("defs");
+    defs.appendChild(el("linearGradient", { id: `${uid}-brand`, x1: "0", y1: "0", x2: "1", y2: "1" }, [
+      el("stop", { offset: "0%", "stop-color": o.brandStart }),
+      el("stop", { offset: "100%", "stop-color": o.brandEnd }),
+    ]));
+    defs.appendChild(el("linearGradient", { id: `${uid}-brand-soft`, x1: "0", y1: "0", x2: "1", y2: "1" }, [
+      el("stop", { offset: "0%", "stop-color": o.brandStart, "stop-opacity": "0.18" }),
+      el("stop", { offset: "100%", "stop-color": o.brandEnd, "stop-opacity": "0.18" }),
+    ]));
+    defs.appendChild(el("linearGradient", { id: `${uid}-mod`, x1: "0", y1: "0", x2: "1", y2: "1" }, [
+      el("stop", { offset: "0%", "stop-color": o.modulePrimary }),
+      el("stop", { offset: "100%", "stop-color": o.moduleSecondary }),
+    ]));
+    defs.appendChild(el("radialGradient", { id: `${uid}-mod-radial`, cx: "0.5", cy: "0.5", r: "0.6" }, [
+      el("stop", { offset: "0%", "stop-color": o.modulePrimary, "stop-opacity": "0.95" }),
+      el("stop", { offset: "100%", "stop-color": o.moduleSecondary, "stop-opacity": "0.9" }),
+    ]));
+    const glow = el("filter", { id: `${uid}-glow`, x: "-60%", y: "-60%", width: "220%", height: "220%" });
+    glow.appendChild(el("feGaussianBlur", { in: "SourceGraphic", stdDeviation: (2.5 * o.glowScale).toFixed(2) }));
+    defs.appendChild(glow);
+    const bigGlow = el("filter", { id: `${uid}-bigglow`, x: "-150%", y: "-150%", width: "400%", height: "400%" });
+    bigGlow.appendChild(el("feGaussianBlur", { in: "SourceGraphic", stdDeviation: (5 * o.glowScale * Math.max(0.6, Math.sqrt(o.glowReach))).toFixed(2) }));
+    defs.appendChild(bigGlow);
+    svg.appendChild(defs);
+
+    if (o.bg === "light") svg.appendChild(el("rect", { x: "0", y: "0", width: "240", height: "240", fill: "#F7F8FA" }));
+    else if (o.bg === "dark") svg.appendChild(el("rect", { x: "0", y: "0", width: "240", height: "240", fill: "#0B1220" }));
+
+    const cx = 120, cy = 120;
+    const CORE_R = 26 * o.coreScale;
+    // armInset = 1 -> arms start just outside core (CORE_R + 2)
+    // armInset = 0 -> arms reach the core center
+    const ARM_START = Math.max(0, (CORE_R + 2) * o.armInset);
+    const LONG_END = 100;
+    const SHORT_END = 66;
+
+    function spiralPath(cx, cy, rotDeg, startR, endR, turn) {
+      const steps = 28;
+      let d = "";
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const r = startR + (endR - startR) * t;
+        const ang = (rotDeg + t * turn) * Math.PI / 180;
+        const x = cx + Math.cos(ang) * r;
+        const y = cy + Math.sin(ang) * r;
+        d += (i === 0 ? "M " : " L ") + x.toFixed(2) + "," + y.toFixed(2);
+      }
+      return d;
+    }
+
+    const longArms = [
+      { rot: 0,   startR: ARM_START, endR: LONG_END, turn: 150 },
+      { rot: 120, startR: ARM_START, endR: LONG_END, turn: 150 },
+      { rot: 240, startR: ARM_START, endR: LONG_END, turn: 150 },
+    ];
+    const shortArms = [
+      { rot: 60,  startR: ARM_START, endR: SHORT_END, turn: 100 },
+      { rot: 180, startR: ARM_START, endR: SHORT_END, turn: 100 },
+      { rot: 300, startR: ARM_START, endR: SHORT_END, turn: 100 },
+    ];
+
+    const armG = el("g", { fill: "none", stroke: `url(#${uid}-brand)`, "stroke-linecap": "round" });
+    longArms.forEach(a => {
+      const d = spiralPath(cx, cy, a.rot, a.startR, a.endR, a.turn);
+      armG.appendChild(el("path", { d, "stroke-width": "3", opacity: "0.18", filter: `url(#${uid}-glow)` }));
+      armG.appendChild(el("path", { d, "stroke-width": "1.8", opacity: "0.95" }));
+      armG.appendChild(el("path", { d, "stroke-width": "0.7", "stroke-dasharray": "1 4", opacity: "0.55", stroke: "#FFFFFF" }));
+    });
+    shortArms.forEach(a => {
+      const d = spiralPath(cx, cy, a.rot, a.startR, a.endR, a.turn);
+      armG.appendChild(el("path", { d, "stroke-width": "2.4", opacity: "0.14", filter: `url(#${uid}-glow)` }));
+      armG.appendChild(el("path", { d, "stroke-width": "1.3", opacity: "0.8" }));
+      armG.appendChild(el("path", { d, "stroke-width": "0.6", "stroke-dasharray": "1 5", opacity: "0.45", stroke: "#FFFFFF" }));
+    });
+    svg.appendChild(armG);
+
+    // Module nodes along arms
+    const armNodes = [];
+    longArms.forEach(a => {
+      const samples = [
+        { t: 0.32, r: 4.5 },
+        { t: 0.62, r: 6.5 },
+        { t: 0.96, r: 8.5 },
+      ];
+      samples.forEach(s => {
+        const r = a.startR + (a.endR - a.startR) * s.t;
+        const ang = (a.rot + s.t * a.turn) * Math.PI / 180;
+        armNodes.push({ x: cx + Math.cos(ang) * r, y: cy + Math.sin(ang) * r, r: s.r, primary: true });
+      });
+    });
+    shortArms.forEach(a => {
+      const samples = [
+        { t: 0.45, r: 4 },
+        { t: 0.95, r: 5.5 },
+      ];
+      samples.forEach(s => {
+        const r = a.startR + (a.endR - a.startR) * s.t;
+        const ang = (a.rot + s.t * a.turn) * Math.PI / 180;
+        armNodes.push({ x: cx + Math.cos(ang) * r, y: cy + Math.sin(ang) * r, r: s.r, primary: false });
+      });
+    });
+
+    const hexG = el("g");
+    armNodes.forEach(n => hexG.appendChild(_solidHex(uid, n.x, n.y, n.r, o, { soft: true, opacity: n.primary ? 1 : 0.88 })));
+    svg.appendChild(hexG);
+
+    // Particles
+    const particles = el("g", { fill: `url(#${uid}-brand)` });
+    const pSeed = mulberry32(55);
+    for (let i = 0; i < 22; i++) {
+      const c = armNodes[Math.floor(pSeed() * armNodes.length)];
+      const ang = pSeed() * Math.PI * 2;
+      const d = pSeed() * 9;
+      const r = 0.4 + pSeed() * 1.4;
+      particles.appendChild(el("circle", {
+        cx: (c.x + Math.cos(ang) * d).toFixed(2),
+        cy: (c.y + Math.sin(ang) * d).toFixed(2),
+        r: r.toFixed(2),
+        opacity: (0.3 + pSeed() * 0.55).toFixed(2),
+      }));
+    }
+    svg.appendChild(particles);
+
+    svg.appendChild(_centralCell(uid, cx, cy, CORE_R, o));
+    return svg;
+  }
+
+  function _UNUSED_oldBuildMarkBody() {
+
+    // ---- Connective strokes (thick piping with highlights) ----
+    const nPath = `M ${N_A.x},${N_A.y} C ${N_B.x},${N_B.y} ${N_C.x},${N_C.y} ${N_D.x},${N_D.y} C ${N_E.x},${N_E.y} ${N_F.x},${N_F.y} ${N_G.x},${N_G.y} C ${N_H.x},${N_H.y} ${N_I.x},${N_I.y} ${N_J.x},${N_J.y}`;
+    const sPath = `M ${S_A.x},${S_A.y} C ${S_B.x},${S_B.y} ${S_C.x},${S_C.y} ${S_D.x},${S_D.y} C ${S_E.x},${S_E.y} ${S_F.x},${S_F.y} ${S_G.x},${S_G.y}`;
+    const fSpinePath = `M ${F_A.x},${F_A.y} C ${F_B.x},${F_B.y} ${F_C.x},${F_C.y} ${F_D.x},${F_D.y}`;
+    const fCrossPath = `M ${F_E.x},${F_E.y} C ${F_F.x},${F_F.y} ${F_G.x},${F_G.y} ${F_H.x},${F_H.y}`;
+
+    // Soft glow halo behind strokes
+    const glowG = el("g", { stroke: `url(#${o.uid}-brand)`, fill: "none", "stroke-linecap": "round", filter: `url(#${o.uid}-glow)`, opacity: "0.35" });
+    glowG.appendChild(el("path", { d: nPath, "stroke-width": "12" }));
+    glowG.appendChild(el("path", { d: sPath, "stroke-width": "12" }));
+    glowG.appendChild(el("path", { d: fSpinePath, "stroke-width": "12" }));
+    glowG.appendChild(el("path", { d: fCrossPath, "stroke-width": "10" }));
+    svg.appendChild(glowG);
+
+    // Main thick pipe
+    const pipesG = el("g", { stroke: `url(#${o.uid}-brand)`, fill: "none", "stroke-linecap": "round" });
+    pipesG.appendChild(el("path", { d: nPath, "stroke-width": "7" }));
+    pipesG.appendChild(el("path", { d: sPath, "stroke-width": "7" }));
+    pipesG.appendChild(el("path", { d: fSpinePath, "stroke-width": "7" }));
+    pipesG.appendChild(el("path", { d: fCrossPath, "stroke-width": "5.5" }));
+    // Inner highlight (lighter core)
+    pipesG.appendChild(el("path", { d: nPath, "stroke-width": "2", stroke: "#FFFFFF", opacity: "0.35" }));
+    pipesG.appendChild(el("path", { d: sPath, "stroke-width": "2", stroke: "#FFFFFF", opacity: "0.35" }));
+    pipesG.appendChild(el("path", { d: fSpinePath, "stroke-width": "2", stroke: "#FFFFFF", opacity: "0.35" }));
+    // Subtle dashed flow detail over top
+    pipesG.appendChild(el("path", { d: nPath, "stroke-width": "1", "stroke-dasharray": "2 5", opacity: "0.6", stroke: "#FFFFFF" }));
+    pipesG.appendChild(el("path", { d: sPath, "stroke-width": "1", "stroke-dasharray": "2 5", opacity: "0.6", stroke: "#FFFFFF" }));
+    svg.appendChild(pipesG);
+
+    // ---- Particles: denser around F's top-right terminal (the degradation effect) ----
+    const particles = el("g", { fill: `url(#${o.uid}-brand)` });
+    const pSeed = mulberry32(11);
+    // Ambient particles along all strokes
+    for (let i = 0; i < 24; i++) {
+      const pick = pSeed();
+      const t = pSeed();
+      let pt;
+      if (pick < 0.35) pt = t < 0.5 ? cubic(N_A, N_B, N_C, N_D, t*2) : (t < 0.75 ? cubic(N_D, N_E, N_F, N_G, (t-0.5)*4) : cubic(N_G, N_H, N_I, N_J, (t-0.75)*4));
+      else if (pick < 0.7) pt = t < 0.5 ? cubic(S_A, S_B, S_C, S_D, t*2) : cubic(S_D, S_E, S_F, S_G, (t-0.5)*2);
+      else pt = cubic(F_A, F_B, F_C, F_D, t);
+      const ox = (pSeed() - 0.5) * 28, oy = (pSeed() - 0.5) * 28;
+      const r = 0.5 + pSeed() * 1.3;
+      particles.appendChild(el("circle", { cx: (pt.x+ox).toFixed(2), cy: (pt.y+oy).toFixed(2), r: r.toFixed(2), opacity: (0.3 + pSeed() * 0.5).toFixed(2) }));
+    }
+    // Heavy fray around F_G / F_H / F_I (top-right of F)
+    for (let i = 0; i < 32; i++) {
+      const anchor = i < 16 ? F_G : (i < 24 ? F_H : F_I);
+      const spread = i < 16 ? 14 : 22;
+      const ox = (pSeed() - 0.5) * spread;
+      const oy = (pSeed() - 0.5) * spread * 0.8 - 2;
+      const r = 0.6 + pSeed() * 2.0;
+      particles.appendChild(el("circle", { cx: (anchor.x+ox).toFixed(2), cy: (anchor.y+oy).toFixed(2), r: r.toFixed(2), opacity: (0.45 + pSeed() * 0.5).toFixed(2) }));
+    }
+    // A few tiny hex dots in the fray for richness
+    for (let i = 0; i < 4; i++) {
+      const ox = (pSeed() - 0.5) * 30;
+      const oy = (pSeed() - 0.5) * 24 - 4;
+      const rr = 1.8 + pSeed() * 1.2;
+      particles.appendChild(el("path", { d: hexPath(F_G.x + ox, F_G.y + oy, rr, 0), fill: "none", stroke: `url(#${o.uid}-brand)`, "stroke-width": "0.8", opacity: (0.5 + pSeed() * 0.4).toFixed(2) }));
+    }
+    svg.appendChild(particles);
+
+    // ---- Hexagons (modules) with variable sizes ----
+    const nPts = pointsN(), sPts = pointsS(), fPts = pointsF();
+    const hexR = 11;
+    const hexesG = el("g");
+
+    function renderHex(cx, cy, angle, isHighlight, sizeMul, seed) {
+      const g = el("g");
+      const r = isHighlight ? hexR * 1.7 : hexR * sizeMul;
+      if (isHighlight && o.moduleMode) {
+        g.appendChild(el("path", { d: hexPath(cx, cy, r * 1.5, 0), fill: `url(#${o.uid}-mod)`, opacity: "0.4", filter: `url(#${o.uid}-mod-glow)` }));
+        g.appendChild(el("path", { d: hexPath(cx, cy, r, 0), fill: `url(#${o.uid}-mod-fill)`, stroke: `url(#${o.uid}-mod)`, "stroke-width": "2.2", "stroke-linejoin": "round" }));
+        if (o.moduleIcon) {
+          const iconSize = r * 1.3;
+          const iconG = el("g", {
+            transform: `translate(${cx - iconSize/2}, ${cy - iconSize/2}) scale(${iconSize/24})`,
+            stroke: "#FFFFFF", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round", fill: "none",
+          });
+          iconG.innerHTML = o.moduleIcon;
+          g.appendChild(iconG);
+        }
+      } else {
+        // Hex body + subtle fill
+        g.appendChild(el("path", { d: hexPath(cx, cy, r, 0), fill: `url(#${o.uid}-hex)`, stroke: `url(#${o.uid}-brand)`, "stroke-width": "1.8", "stroke-linejoin": "round" }));
+        // Waveform glyph inside (only on medium+ hexes)
+        if (sizeMul >= 0.9) {
+          const bars = waveBars(cx, cy, r, seed);
+          const barsG = el("g", { fill: `url(#${o.uid}-brand)`, opacity: "0.9" });
+          for (const b of bars) {
+            barsG.appendChild(el("rect", { x: b.x.toFixed(2), y: b.y.toFixed(2), width: b.w.toFixed(2), height: b.h.toFixed(2), rx: (b.w/2).toFixed(2) }));
+          }
+          g.appendChild(barsG);
+        } else {
+          // Tiny hex: just a core dot
+          g.appendChild(el("circle", { cx, cy, r: (r * 0.3).toFixed(2), fill: `url(#${o.uid}-brand)`, opacity: "0.9" }));
+        }
+      }
+      return g;
+    }
+
+    // Highlighted position: by default "F" stroke last point (top-right of F = prominent module slot)
+    // Back-compat: highlightStroke 'S' default mapped to F index 3 (top of F spine)
+    let hiStroke = o.highlightStroke;
+    let hiIndex = o.highlightIndex;
+    if (hiStroke === "S" && hiIndex === 0) { hiStroke = "F"; hiIndex = 3; } // top of F spine
+
+    nPts.forEach((p, i) => {
+      const isH = o.moduleMode && hiStroke === "N" && i === hiIndex;
+      hexesG.appendChild(renderHex(p.x, p.y, p.angle, isH, p.size || 1, i + 1));
+    });
+    sPts.forEach((p, i) => {
+      const isH = o.moduleMode && hiStroke === "S" && i === hiIndex;
+      hexesG.appendChild(renderHex(p.x, p.y, p.angle, isH, p.size || 1, i + 100));
+    });
+    fPts.forEach((p, i) => {
+      const isH = o.moduleMode && hiStroke === "F" && i === hiIndex;
+      hexesG.appendChild(renderHex(p.x, p.y, p.angle, isH, p.size || 1, i + 200));
+    });
+    svg.appendChild(hexesG);
+    return svg;
+  }
+
+  function buildLogo(opts) {
+    const o = Object.assign({
+      brandStart: "#2EE59D", brandEnd: "#2B8FE8",
+      moduleMode: false, modulePrimary: "#8B5CF6", moduleSecondary: "#EC4899",
+      moduleIcon: "", moduleName: "UI MODULE",
+      bg: "transparent", uid: "logo",
+      width: 1500, height: 380,
+      fontFamily: "'Inter', system-ui, sans-serif",
+      markSize: 340,
+      titleScale: 1.0, moduleNameScale: 1.0,
+      // Geometry forwarded to buildMark
+      coreScale: 1.0, glowScale: 1.0, glowReach: 1.0, armInset: 1.0,
+    }, opts);
+
+    const svg = el("svg", { xmlns: NS, viewBox: `0 0 ${o.width} ${o.height}`, width: o.width, height: o.height });
+
+    if (o.bg === "light") svg.appendChild(el("rect", { x: "0", y: "0", width: o.width, height: o.height, fill: "#F7F8FA" }));
+    else if (o.bg === "dark") svg.appendChild(el("rect", { x: "0", y: "0", width: o.width, height: o.height, fill: "#0B1220" }));
+
+    const markSize = o.markSize;
+    const markWrap = el("g", { transform: `translate(20, ${(o.height - markSize) / 2}) scale(${markSize / 240})` });
+    const mark = buildMark({
+      brandStart: o.brandStart, brandEnd: o.brandEnd,
+      moduleMode: o.moduleMode, modulePrimary: o.modulePrimary, moduleSecondary: o.moduleSecondary,
+      moduleIcon: o.moduleIcon, uid: o.uid + "-mark", bg: "transparent", size: 240,
+      coreScale: o.coreScale, glowScale: o.glowScale, glowReach: o.glowReach, armInset: o.armInset,
+    });
+    const inner = el("g");
+    Array.from(mark.childNodes).forEach(n => inner.appendChild(n));
+    markWrap.appendChild(inner);
+    svg.appendChild(markWrap);
+
+    const textX = 20 + markSize + 40;
+    const titleY = o.moduleMode ? o.height / 2 - 10 : o.height / 2 + 25;
+    const fg = (o.bg === "dark" || o.bg === "transparent") ? "#FFFFFF" : "#0B1220";
+
+    const defs = el("defs");
+    defs.appendChild(el("linearGradient", { id: `${o.uid}-sub`, x1: "0", y1: "0", x2: "1", y2: "0" }, [
+      el("stop", { offset: "0%", "stop-color": o.modulePrimary }),
+      el("stop", { offset: "100%", "stop-color": o.moduleSecondary }),
+    ]));
+    svg.appendChild(defs);
+
+    const titleFontSize = 86 * o.titleScale;
+    const title = el("text", { x: textX, y: titleY, "font-family": o.fontFamily, "font-size": titleFontSize.toFixed(1), "font-weight": "300", fill: fg });
+    const ts1 = el("tspan", { "font-weight": "800" }); ts1.textContent = "Nano";
+    const ts2 = el("tspan", { "font-weight": "400" }); ts2.textContent = "Service";
+    const ts3 = el("tspan", { "font-weight": "800", fill: o.brandEnd }); ts3.textContent = "Flow";
+    title.appendChild(ts1); title.appendChild(ts2); title.appendChild(ts3);
+    svg.appendChild(title);
+
+    if (o.moduleMode && o.moduleName) {
+      const subFontSize = 60 * o.moduleNameScale;
+      const sub = el("text", {
+        x: textX, y: titleY + 60 * o.moduleNameScale + 12,
+        "font-family": o.fontFamily, "font-size": subFontSize.toFixed(1), "font-weight": "800", "letter-spacing": "2",
+        fill: `url(#${o.uid}-sub)`,
+      });
+      sub.textContent = o.moduleName;
+      svg.appendChild(sub);
+    }
+    return svg;
+  }
+
+  window.NSFLogo = { buildMark, buildLogo };
+})();
+</script>
+<script>
+  // ---------- Lucide-style icon set (24x24 viewBox, stroke-only fragments) ----------
+  const ICONS = {
+    ui: `<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 10h18"/><path d="M7 7h.01"/><path d="M15 21l-3-4"/><path d="M12 17l5 2-2-5z"/>`,
+    globe: `<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a13.5 13.5 0 0 1 0 18"/><path d="M12 3a13.5 13.5 0 0 0 0 18"/>`,
+    chart: `<path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-5"/>`,
+    network: `<circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><circle cx="12" cy="12" r="2"/><path d="M8 8l2.5 2.5"/><path d="M16 8l-2.5 2.5"/><path d="M8 16l2.5-2.5"/><path d="M16 16l-2.5-2.5"/>`,
+    audio: `<rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2"/><path d="M12 19v3"/>`,
+    database: `<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v6c0 1.7 4 3 9 3s9-1.3 9-3V5"/><path d="M3 11v6c0 1.7 4 3 9 3s9-1.3 9-3v-6"/>`,
+    shield: `<path d="M12 2l8 3v6c0 5-3.5 9.5-8 11-4.5-1.5-8-6-8-11V5z"/>`,
+    cog: `<circle cx="12" cy="12" r="3"/><path d="M12 1v4"/><path d="M12 19v4"/><path d="M4.2 4.2l2.8 2.8"/><path d="M17 17l2.8 2.8"/><path d="M1 12h4"/><path d="M19 12h4"/><path d="M4.2 19.8l2.8-2.8"/><path d="M17 7l2.8-2.8"/>`,
+    cloud: `<path d="M6 18h11a4 4 0 0 0 .7-7.9A6 6 0 0 0 6 10a4 4 0 0 0 0 8z"/>`,
+    bell: `<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>`,
+    key: `<circle cx="7.5" cy="15.5" r="4"/><path d="M10.3 12.7L21 2"/><path d="M17 6l3 3"/><path d="M15 8l3 3"/>`,
+    terminal: `<path d="M4 17l6-6-6-6"/><path d="M12 19h8"/>`,
+    lock: `<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>`,
+    search: `<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>`,
+    mail: `<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/>`,
+    link: `<path d="M9 17H7a5 5 0 0 1 0-10h2"/><path d="M15 7h2a5 5 0 0 1 0 10h-2"/><path d="M8 12h8"/>`,
+    layers: `<path d="M12 2l9 5-9 5-9-5 9-5z"/><path d="M3 12l9 5 9-5"/><path d="M3 17l9 5 9-5"/>`,
+    box: `<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>`,
+    zap: `<path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/>`,
+    code: `<path d="M8 6l-6 6 6 6"/><path d="M16 6l6 6-6 6"/>`,
+    image: `<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5-9 9"/>`,
+    users: `<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 8.5a3 3 0 1 1 3.5 5.4"/><path d="M15 14a6.5 6.5 0 0 1 6.5 6"/>`,
+    star: `<path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8l-6.2 3.2 1.2-6.8-5-4.9 6.9-1z"/>`,
+    cpu: `<rect x="7" y="7" width="10" height="10" rx="1.5"/><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>`,
+  };
+
+  // ---------- Presets ----------
+  const PRESETS = [
+    { id: "standard", name: "Standard", moduleMode: false, primary: "#2B8FE8", secondary: "#2EE59D", icon: "ui", moduleName: "" },
+    { id: "ui",          name: "UI",          moduleMode: true, primary: "#8B5CF6", secondary: "#EC4899", icon: "ui",      moduleName: "UI MODULE" },
+    { id: "loc",         name: "Localization",moduleMode: true, primary: "#10B981", secondary: "#14B8A6", icon: "globe",   moduleName: "LOCALIZATION" },
+    { id: "analytics",   name: "Analytics",   moduleMode: true, primary: "#F59E0B", secondary: "#EF4444", icon: "chart",   moduleName: "ANALYTICS" },
+    { id: "network",     name: "Networking",  moduleMode: true, primary: "#3B82F6", secondary: "#06B6D4", icon: "network", moduleName: "NETWORKING" },
+    { id: "audio",       name: "Audio",       moduleMode: true, primary: "#EC4899", secondary: "#A855F7", icon: "audio",   moduleName: "AUDIO" },
+  ];
+
+  // ---------- State ----------
+  const state = {
+    moduleMode: true,
+    brandStart: "#2EE59D",
+    brandEnd: "#2B8FE8",
+    modulePrimary: "#8B5CF6",
+    moduleSecondary: "#EC4899",
+    moduleIcon: ICONS.ui,
+    moduleIconId: "ui",
+    moduleName: "UI MODULE",
+    bg: "dark",
+    presetId: "ui",
+    // Geometry
+    markSize: 240,
+    coreScale: 1.0,
+    glowScale: 1.0,
+    glowReach: 1.0,
+    armInset: 1.0,
+    titleScale: 1.0,
+    moduleNameScale: 1.0,
+  };
+
+  // ---------- Custom presets (persisted) ----------
+  const CUSTOM_PRESETS_KEY = "nsf-custom-presets";
+  let customPresets = [];
+  try {
+    customPresets = JSON.parse(localStorage.getItem(CUSTOM_PRESETS_KEY) || "[]");
+  } catch (e) { customPresets = []; }
+  function saveCustomPresets() {
+    localStorage.setItem(CUSTOM_PRESETS_KEY, JSON.stringify(customPresets));
+  }
+
+  // ---------- UI wiring ----------
+  // Presets
+  const presetsEl = document.getElementById("presets");
+  function renderPresets() {
+    presetsEl.innerHTML = "";
+    PRESETS.forEach(p => renderPresetCell(p, false));
+    customPresets.forEach(p => renderPresetCell(p, true));
+  }
+  function renderPresetCell(p, isCustom) {
+    const el = document.createElement("div");
+    el.className = "preset" + (p.id === state.presetId ? " active" : "");
+    el.dataset.id = p.id;
+    el.innerHTML = `
+      <div class="swatch" style="background: ${p.moduleMode ? `linear-gradient(135deg, ${p.primary}, ${p.secondary})` : `linear-gradient(135deg, #2EE59D, #2B8FE8)`};"></div>
+      <div class="name">${p.name}</div>
+      ${isCustom ? '<div class="del-btn" title="Delete preset">×</div>' : ''}
+    `;
+    el.addEventListener("click", () => applyPreset(p.id));
+    if (isCustom) {
+      el.querySelector(".del-btn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        customPresets = customPresets.filter(x => x.id !== p.id);
+        saveCustomPresets();
+        renderPresets();
+      });
+    }
+    presetsEl.appendChild(el);
+  }
+  renderPresets();
+
+  function applyPreset(id) {
+    const p = PRESETS.find(x => x.id === id) || customPresets.find(x => x.id === id);
+    if (!p) return;
+    state.presetId = id;
+    state.moduleMode = p.moduleMode;
+    state.modulePrimary = p.primary;
+    state.moduleSecondary = p.secondary;
+    if (p.iconSvg) {
+      state.moduleIcon = p.iconSvg;
+      state.moduleIconId = null;
+    } else {
+      state.moduleIcon = ICONS[p.icon];
+      state.moduleIconId = p.icon;
+    }
+    state.moduleName = p.moduleName;
+    syncInputs();
+    render();
+  }
+
+  // Save current config as a new preset
+  document.getElementById("save-preset-btn").addEventListener("click", () => {
+    const name = prompt("Name this preset:", state.moduleName || "Custom module");
+    if (!name) return;
+    const id = "custom-" + Date.now();
+    const preset = {
+      id, name, custom: true,
+      moduleMode: state.moduleMode,
+      primary: state.modulePrimary,
+      secondary: state.moduleSecondary,
+      moduleName: state.moduleName,
+    };
+    if (state.moduleIconId) preset.icon = state.moduleIconId;
+    else preset.iconSvg = state.moduleIcon;
+    customPresets.push(preset);
+    saveCustomPresets();
+    state.presetId = id;
+    renderPresets();
+  });
+
+  // Icons
+  const iconsEl = document.getElementById("icons");
+  Object.keys(ICONS).forEach(key => {
+    const b = document.createElement("button");
+    b.className = "icon-btn" + (state.moduleIconId === key ? " active" : "");
+    b.dataset.id = key;
+    b.innerHTML = `<svg viewBox="0 0 24 24">${ICONS[key]}</svg>`;
+    b.addEventListener("click", () => {
+      state.moduleIcon = ICONS[key];
+      state.moduleIconId = key;
+      document.querySelectorAll(".icon-btn").forEach(x => x.classList.toggle("active", x.dataset.id === key));
+      document.getElementById("module-icon").value = "";
+      render();
+    });
+    iconsEl.appendChild(b);
+  });
+
+  // Switch
+  const switchEl = document.getElementById("switch-module");
+  switchEl.classList.toggle("on", state.moduleMode);
+  switchEl.addEventListener("click", () => {
+    state.moduleMode = !state.moduleMode;
+    switchEl.classList.toggle("on", state.moduleMode);
+    render();
+  });
+
+  // Color pair sync helper
+  function bindColor(cId, tId, key) {
+    const c = document.getElementById(cId);
+    const t = document.getElementById(tId);
+    c.addEventListener("input", () => { state[key] = c.value; t.value = c.value; render(); });
+    t.addEventListener("input", () => {
+      if (/^#[0-9a-f]{6}$/i.test(t.value)) { state[key] = t.value; c.value = t.value; render(); }
+    });
+  }
+  bindColor("brand-start-c", "brand-start-t", "brandStart");
+  bindColor("brand-end-c", "brand-end-t", "brandEnd");
+  bindColor("module-primary-c", "module-primary-t", "modulePrimary");
+  bindColor("module-secondary-c", "module-secondary-t", "moduleSecondary");
+
+  // Geometry sliders
+  function bindSlider(rangeId, valueId, key, fmt, render2) {
+    const r = document.getElementById(rangeId);
+    const v = document.getElementById(valueId);
+    r.addEventListener("input", () => {
+      const num = parseFloat(r.value);
+      state[key] = num;
+      v.textContent = fmt(num);
+      render();
+    });
+  }
+  bindSlider("size-range",  "size-val",  "markSize",   n => Math.round(n) + "");
+  bindSlider("core-range",  "core-val",  "coreScale",  n => n.toFixed(2) + "×");
+  bindSlider("glow-range",  "glow-val",  "glowScale",  n => n.toFixed(2) + "×");
+  bindSlider("glow-reach-range", "glow-reach-val", "glowReach", n => n.toFixed(2) + "×");
+  bindSlider("arm-range",   "arm-val",   "armInset",  n => n.toFixed(2) + "×");
+  bindSlider("title-size-range",  "title-size-val",  "titleScale",  n => n.toFixed(2) + "×");
+  bindSlider("module-size-range", "module-size-val", "moduleNameScale", n => n.toFixed(2) + "×");
+
+  // Module name
+  document.getElementById("module-name").addEventListener("input", e => {
+    state.moduleName = e.target.value;
+    render();
+  });
+  // Custom icon svg
+  document.getElementById("module-icon").addEventListener("input", e => {
+    const v = e.target.value.trim();
+    if (v) {
+      state.moduleIcon = v;
+      state.moduleIconId = null;
+      document.querySelectorAll(".icon-btn").forEach(x => x.classList.remove("active"));
+    }
+    render();
+  });
+
+  // Background buttons
+  document.querySelectorAll(".bg-btn").forEach(b => {
+    b.addEventListener("click", () => {
+      state.bg = b.dataset.bg;
+      document.querySelectorAll(".bg-btn").forEach(x => x.classList.toggle("active", x === b));
+      const c = document.getElementById("main-canvas");
+      c.classList.remove("transparent", "dark", "light");
+      c.classList.add(state.bg);
+      document.getElementById("main-label").textContent = state.bg.charAt(0).toUpperCase() + state.bg.slice(1);
+      render();
+    });
+  });
+
+  // Sync inputs from state (after preset)
+  function syncInputs() {
+    document.getElementById("module-name").value = state.moduleName;
+    document.getElementById("module-icon").value = "";
+    document.getElementById("module-primary-c").value = state.modulePrimary;
+    document.getElementById("module-primary-t").value = state.modulePrimary;
+    document.getElementById("module-secondary-c").value = state.moduleSecondary;
+    document.getElementById("module-secondary-t").value = state.moduleSecondary;
+    switchEl.classList.toggle("on", state.moduleMode);
+    document.querySelectorAll(".preset").forEach(p => p.classList.toggle("active", p.dataset.id === state.presetId));
+    document.querySelectorAll(".icon-btn").forEach(x => x.classList.toggle("active", x.dataset.id === state.moduleIconId));
+  }
+
+  // Full resync of every control from state (used after importing a setup)
+  function syncAllInputs() {
+    syncInputs();
+    document.getElementById("brand-start-c").value = state.brandStart;
+    document.getElementById("brand-start-t").value = state.brandStart;
+    document.getElementById("brand-end-c").value = state.brandEnd;
+    document.getElementById("brand-end-t").value = state.brandEnd;
+
+    const sliders = [
+      ["size-range", "size-val", "markSize", n => Math.round(n) + ""],
+      ["core-range", "core-val", "coreScale", n => n.toFixed(2) + "×"],
+      ["glow-range", "glow-val", "glowScale", n => n.toFixed(2) + "×"],
+      ["glow-reach-range", "glow-reach-val", "glowReach", n => n.toFixed(2) + "×"],
+      ["arm-range", "arm-val", "armInset", n => n.toFixed(2) + "×"],
+      ["title-size-range", "title-size-val", "titleScale", n => n.toFixed(2) + "×"],
+      ["module-size-range", "module-size-val", "moduleNameScale", n => n.toFixed(2) + "×"],
+    ];
+    sliders.forEach(([rangeId, valueId, key, fmt]) => {
+      const r = document.getElementById(rangeId);
+      const v = document.getElementById(valueId);
+      if (state[key] != null) {
+        r.value = state[key];
+        v.textContent = fmt(state[key]);
+      }
+    });
+
+    document.querySelectorAll(".bg-btn").forEach(b => b.classList.toggle("active", b.dataset.bg === state.bg));
+    const c = document.getElementById("main-canvas");
+    c.classList.remove("transparent", "dark", "light");
+    c.classList.add(state.bg);
+    document.getElementById("main-label").textContent = state.bg.charAt(0).toUpperCase() + state.bg.slice(1);
+  }
+
+  // ---------- Render ----------
+  function makeOpts(bgOverride, unique) {
+    return {
+      brandStart: state.brandStart,
+      brandEnd: state.brandEnd,
+      moduleMode: state.moduleMode,
+      modulePrimary: state.modulePrimary,
+      moduleSecondary: state.moduleSecondary,
+      moduleIcon: state.moduleIcon,
+      moduleName: state.moduleName,
+      coreScale: state.coreScale,
+      glowScale: state.glowScale,
+      glowReach: state.glowReach,
+      armInset: state.armInset,
+      titleScale: state.titleScale,
+      moduleNameScale: state.moduleNameScale,
+      markSize: state.markSize,
+      bg: bgOverride === "white" ? "light" : bgOverride,
+      uid: unique,
+    };
+  }
+  // override: white variant uses light bg but pure #FFFFFF
+  function buildLogoWithBg(bg, uid) {
+    const opts = makeOpts(bg, uid);
+    const svg = NSFLogo.buildLogo(opts);
+    if (bg === "white") {
+      // swap bg rect color to pure white
+      const firstChild = svg.firstChild;
+      if (firstChild && firstChild.tagName === "rect") firstChild.setAttribute("fill", "#FFFFFF");
+    }
+    return svg;
+  }
+  function buildMarkWithBg(bg, uid) {
+    const opts = makeOpts(bg, uid);
+    opts.size = state.markSize;
+    const svg = NSFLogo.buildMark(opts);
+    if (bg === "white") {
+      const firstChild = svg.firstChild;
+      if (firstChild && firstChild.tagName === "rect") firstChild.setAttribute("fill", "#FFFFFF");
+    }
+    return svg;
+  }
+
+  function render() {
+    // Main stage
+    const main = document.getElementById("main-render");
+    main.innerHTML = "";
+    main.appendChild(buildLogoWithBg(state.bg, "main-" + Date.now()));
+
+    // Logo variants
+    document.querySelectorAll('[data-kind="logo"].render-small').forEach(el => {
+      el.innerHTML = "";
+      el.appendChild(buildLogoWithBg(el.dataset.variant, "v-" + el.dataset.variant + "-" + Date.now()));
+    });
+
+    // Mark-only variants
+    document.querySelectorAll('[data-kind="mark"].mark-cell').forEach(el => {
+      el.innerHTML = "";
+      el.appendChild(buildMarkWithBg(el.dataset.variant, "m-" + el.dataset.variant + "-" + Date.now()));
+    });
+  }
+
+  // Export
+  function svgToString(svg) {
+    // Ensure xmlns
+    const clone = svg.cloneNode(true);
+    clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    return '<?xml version="1.0" encoding="UTF-8"?>\n' + new XMLSerializer().serializeToString(clone);
+  }
+
+  document.getElementById("copy-svg").addEventListener("click", async () => {
+    const svg = document.querySelector("#main-render svg");
+    if (!svg) return;
+    await navigator.clipboard.writeText(svgToString(svg));
+    const btn = document.getElementById("copy-svg");
+    const old = btn.textContent;
+    btn.textContent = "Copied ✓";
+    setTimeout(() => btn.textContent = old, 1200);
+  });
+
+  function downloadSvg(svg, filename) {
+    const blob = new Blob([svgToString(svg)], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+  function currentFilename(bg, kind) {
+    const base = state.moduleMode ? `NanoServiceFlow-${(state.moduleName || "Module").replace(/\s+/g, "-")}` : "NanoServiceFlow";
+    return `${base}-${kind}-${bg}.svg`;
+  }
+
+  document.getElementById("download-svg").addEventListener("click", () => {
+    const svg = document.querySelector("#main-render svg");
+    if (!svg) return;
+    downloadSvg(svg, currentFilename(state.bg, "logo"));
+  });
+
+  // Variant downloads
+  document.querySelectorAll("[data-variant][data-kind]").forEach(el => {
+    if (el.tagName === "BUTTON") {
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const bg = el.dataset.variant, kind = el.dataset.kind;
+        const container = document.querySelector(`.${kind === "logo" ? "render-small" : "mark-cell"}[data-variant="${bg}"][data-kind="${kind}"]`);
+        const svg = container && container.querySelector("svg");
+        if (svg) downloadSvg(svg, currentFilename(bg, kind));
+      });
+    }
+  });
+
+  // ---------- Export / Import full setup ----------
+  document.getElementById("export-setup-btn").addEventListener("click", () => {
+    const payload = {
+      type: "nsf-logo-setup",
+      version: 1,
+      state,
+      customPresets,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const name = (state.moduleName || "NanoServiceFlow").replace(/\s+/g, "-");
+    a.href = url; a.download = `NSF-setup-${name}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  const importFileInput = document.getElementById("import-setup-file");
+  document.getElementById("import-setup-btn").addEventListener("click", () => importFileInput.click());
+  importFileInput.addEventListener("change", () => {
+    const file = importFileInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        const incomingState = data.state || data; // tolerate raw state export too
+        Object.assign(state, incomingState);
+        if (Array.isArray(data.customPresets)) {
+          customPresets = data.customPresets;
+          saveCustomPresets();
+        }
+        renderPresets();
+        syncAllInputs();
+        render();
+      } catch (e) {
+        alert("Couldn't read that file — is it a valid NSF setup JSON?");
+      }
+    };
+    reader.readAsText(file);
+    importFileInput.value = "";
+  });
+
+  // Init
+  render();
+
+</script>
+</body>
+</html>
