@@ -5,6 +5,20 @@ brand logo and its per-module variants. Everything — UI, geometry math, and th
 SVG renderer — lives in one self-contained HTML file that runs entirely in the
 browser. There is **no build step, no server, and no package manager**.
 
+## Purpose & background
+
+This tool was created to provide a logo for the **NanoServiceFlow** library and,
+just as importantly, to give a **consistent look across all the different module
+libraries that extend it**. Rather than hand-drawing a separate mark for each
+module, the logo is generated parametrically so every module shares the same core
+identity while getting its own color, icon, and name.
+
+It was also an **experiment** to explore two things:
+
+- The capabilities of the **Claude Design** tool.
+- How to build a **parametric design system** that grows outward from a single,
+  "simple" but central element — the logo — into a family of coherent variants.
+
 ## What kind of project is this?
 
 - **Type:** Static client-side web application (design/brand tooling).
