@@ -1,5 +1,9 @@
 # NanoServiceFlow — Parametric Logo System
 
+[![Deploy to GitHub Pages](https://github.com/aim4code/nanoserviceflow-logo/actions/workflows/pages.yml/badge.svg)](https://github.com/aim4code/nanoserviceflow-logo/actions/workflows/pages.yml)
+
+**[▶ Open the live tool](https://aim4code.github.io/nanoserviceflow-logo/)**
+
 A **single-file, zero-dependency web tool** for generating the
 [NanoServiceFlow](https://github.com/aim4code/nanoserviceflow) brand logo and its
 per-module variants. Everything — UI, geometry math, and the
@@ -12,7 +16,7 @@ browser. There is **no build step, no server, and no package manager**.
 
 This tool was created to provide a logo for the
 [**NanoServiceFlow**](https://github.com/aim4code/nanoserviceflow) library and,
-just as importantly, to give a **consistent look across all the different module
+just as importantly, to give **a consistent look across all the different module
 libraries that extend it**. Rather than hand-drawing a separate mark for each
 module, the logo is generated parametrically so every module shares the same core
 identity while getting its own color, icon, and name.
@@ -76,7 +80,7 @@ Any static server works (`npx serve`, `php -S localhost:8000`, etc.).
 3. Fine-tune with the **Geometry** sliders.
 4. Choose a background (top toolbar) and **Copy SVG** / **Download SVG**, or grab a
    specific **Background variant** / **Mark only** cell.
-5. Use **Export setup** to save your configuration; **Import setup** to restore it.
+5. Use **Export setup** to save your configuration; **Import setup** to restore it later.
 
 ## Project structure
 
@@ -92,6 +96,17 @@ Any static server works (`npx serve`, `php -S localhost:8000`, etc.).
 ├── README.md
 └── .gitignore
 ```
+
+## Deployment
+
+The tool is published automatically with **GitHub Pages**.
+
+Every push to `main` triggers the [GitHub Actions deployment workflow](https://github.com/aim4code/nanoserviceflow-logo/actions/workflows/pages.yml), which publishes the current version of the tool.
+
+**Live demo:** https://aim4code.github.io/nanoserviceflow-logo/
+
+There is no separate build pipeline: the workflow copies the self-contained HTML
+application to `index.html` and deploys it as a static GitHub Pages site.
 
 ## Development
 
