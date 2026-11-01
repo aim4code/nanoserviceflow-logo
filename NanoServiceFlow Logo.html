@@ -559,6 +559,27 @@
       </div>
       <div style="margin-bottom:14px;">
         <div class="slider-row">
+          <span class="lbl">Arm length</span>
+          <span class="val" id="arm-length-val">1.00×</span>
+        </div>
+        <input type="range" id="arm-length-range" min="0.5" max="1.15" step="0.05" value="1">
+      </div>
+      <div style="margin-bottom:14px;">
+        <div class="slider-row">
+          <span class="lbl">Mini module size</span>
+          <span class="val" id="node-size-val">1.00×</span>
+        </div>
+        <input type="range" id="node-size-range" min="0.5" max="1.3" step="0.05" value="1">
+      </div>
+      <div style="margin-bottom:14px;">
+        <div class="slider-row">
+          <span class="lbl">Mini module count</span>
+          <span class="val" id="node-count-val">3</span>
+        </div>
+        <input type="range" id="node-count-range" min="1" max="8" step="1" value="3">
+      </div>
+      <div style="margin-bottom:14px;">
+        <div class="slider-row">
           <span class="lbl">"NanoServiceFlow" text size</span>
           <span class="val" id="title-size-val">1.00×</span>
         </div>
@@ -885,6 +906,9 @@
       glowScale: 1.0,  // intensity/spread of glows around module + arms
       glowReach: 1.0,  // how far the central module glow halo extends
       armInset: 1.0,   // 0 = arms reach the core center; 1 = arms start at the module border (default)
+      armLength: 1.0,  // extends/shortens each arm along its own spiral; the start point stays put
+      nodeScale: 1.0,  // size of the mini modules along the arms
+      nodeCount: 3,    // mini modules per long arm (short arms get 2/3 of this)
     }, opts);
 
     const svg = el("svg", { xmlns: NS, viewBox: "0 0 240 240", width: o.size, height: o.size, "aria-label": "NanoServiceFlow mark" });
@@ -927,10 +951,10 @@
     const SHORT_END = 66;
 
     function spiralPath(cx, cy, rotDeg, startR, endR, turn) {
-      const steps = 28;
+      const steps = Math.max(8, Math.round(28 * o.armLength));
       let d = "";
       for (let i = 0; i <= steps; i++) {
-        const t = i / steps;
+        const t = (i / steps) * o.armLength;
         const r = startR + (endR - startR) * t;
         const ang = (rotDeg + t * turn) * Math.PI / 180;
         const x = cx + Math.cos(ang) * r;
@@ -966,29 +990,48 @@
     });
     svg.appendChild(armG);
 
+    // Interpolates n samples across the anchor list; n === anchors.length returns the anchors as-is
+    function resampleAnchors(anchors, n) {
+      if (n === anchors.length) return anchors;
+      if (n === 1) return [anchors[anchors.length - 1]];
+      const samples = [];
+      for (let i = 0; i < n; i++) {
+        const u = i * (anchors.length - 1) / (n - 1);
+        const j = Math.min(Math.floor(u), anchors.length - 2);
+        const f = u - j;
+        samples.push({
+          t: anchors[j].t + (anchors[j + 1].t - anchors[j].t) * f,
+          r: anchors[j].r + (anchors[j + 1].r - anchors[j].r) * f,
+        });
+      }
+      return samples;
+    }
+
     // Module nodes along arms
     const armNodes = [];
+    const longSamples = resampleAnchors([
+      { t: 0.32, r: 4.5 },
+      { t: 0.62, r: 6.5 },
+      { t: 0.96, r: 8.5 },
+    ], o.nodeCount);
+    const shortSamples = resampleAnchors([
+      { t: 0.45, r: 4 },
+      { t: 0.95, r: 5.5 },
+    ], Math.max(1, Math.round(o.nodeCount * 2 / 3)));
     longArms.forEach(a => {
-      const samples = [
-        { t: 0.32, r: 4.5 },
-        { t: 0.62, r: 6.5 },
-        { t: 0.96, r: 8.5 },
-      ];
-      samples.forEach(s => {
-        const r = a.startR + (a.endR - a.startR) * s.t;
-        const ang = (a.rot + s.t * a.turn) * Math.PI / 180;
-        armNodes.push({ x: cx + Math.cos(ang) * r, y: cy + Math.sin(ang) * r, r: s.r, primary: true });
+      longSamples.forEach(s => {
+        const tt = s.t * o.armLength;
+        const r = a.startR + (a.endR - a.startR) * tt;
+        const ang = (a.rot + tt * a.turn) * Math.PI / 180;
+        armNodes.push({ x: cx + Math.cos(ang) * r, y: cy + Math.sin(ang) * r, r: s.r * o.nodeScale, primary: true });
       });
     });
     shortArms.forEach(a => {
-      const samples = [
-        { t: 0.45, r: 4 },
-        { t: 0.95, r: 5.5 },
-      ];
-      samples.forEach(s => {
-        const r = a.startR + (a.endR - a.startR) * s.t;
-        const ang = (a.rot + s.t * a.turn) * Math.PI / 180;
-        armNodes.push({ x: cx + Math.cos(ang) * r, y: cy + Math.sin(ang) * r, r: s.r, primary: false });
+      shortSamples.forEach(s => {
+        const tt = s.t * o.armLength;
+        const r = a.startR + (a.endR - a.startR) * tt;
+        const ang = (a.rot + tt * a.turn) * Math.PI / 180;
+        armNodes.push({ x: cx + Math.cos(ang) * r, y: cy + Math.sin(ang) * r, r: s.r * o.nodeScale, primary: false });
       });
     });
 
@@ -1154,6 +1197,7 @@
       titleScale: 1.0, moduleNameScale: 1.0,
       // Geometry forwarded to buildMark
       coreScale: 1.0, glowScale: 1.0, glowReach: 1.0, armInset: 1.0,
+      armLength: 1.0, nodeScale: 1.0, nodeCount: 3,
     }, opts);
 
     const svg = el("svg", { xmlns: NS, viewBox: `0 0 ${o.width} ${o.height}`, width: o.width, height: o.height });
@@ -1168,6 +1212,7 @@
       moduleMode: o.moduleMode, modulePrimary: o.modulePrimary, moduleSecondary: o.moduleSecondary,
       moduleIcon: o.moduleIcon, uid: o.uid + "-mark", bg: "transparent", size: 240,
       coreScale: o.coreScale, glowScale: o.glowScale, glowReach: o.glowReach, armInset: o.armInset,
+      armLength: o.armLength, nodeScale: o.nodeScale, nodeCount: o.nodeCount,
     });
     const inner = el("g");
     Array.from(mark.childNodes).forEach(n => inner.appendChild(n));
@@ -1266,6 +1311,9 @@
     glowScale: 1.0,
     glowReach: 1.0,
     armInset: 1.0,
+    armLength: 1.0,
+    nodeScale: 1.0,
+    nodeCount: 3,
     titleScale: 1.0,
     moduleNameScale: 1.0,
   };
@@ -1405,6 +1453,9 @@
   bindSlider("glow-range",  "glow-val",  "glowScale",  n => n.toFixed(2) + "×");
   bindSlider("glow-reach-range", "glow-reach-val", "glowReach", n => n.toFixed(2) + "×");
   bindSlider("arm-range",   "arm-val",   "armInset",  n => n.toFixed(2) + "×");
+  bindSlider("arm-length-range", "arm-length-val", "armLength", n => n.toFixed(2) + "×");
+  bindSlider("node-size-range",  "node-size-val",  "nodeScale", n => n.toFixed(2) + "×");
+  bindSlider("node-count-range", "node-count-val", "nodeCount", n => Math.round(n) + "");
   bindSlider("title-size-range",  "title-size-val",  "titleScale",  n => n.toFixed(2) + "×");
   bindSlider("module-size-range", "module-size-val", "moduleNameScale", n => n.toFixed(2) + "×");
 
@@ -1464,6 +1515,9 @@
       ["glow-range", "glow-val", "glowScale", n => n.toFixed(2) + "×"],
       ["glow-reach-range", "glow-reach-val", "glowReach", n => n.toFixed(2) + "×"],
       ["arm-range", "arm-val", "armInset", n => n.toFixed(2) + "×"],
+      ["arm-length-range", "arm-length-val", "armLength", n => n.toFixed(2) + "×"],
+      ["node-size-range", "node-size-val", "nodeScale", n => n.toFixed(2) + "×"],
+      ["node-count-range", "node-count-val", "nodeCount", n => Math.round(n) + ""],
       ["title-size-range", "title-size-val", "titleScale", n => n.toFixed(2) + "×"],
       ["module-size-range", "module-size-val", "moduleNameScale", n => n.toFixed(2) + "×"],
     ];
@@ -1497,6 +1551,9 @@
       glowScale: state.glowScale,
       glowReach: state.glowReach,
       armInset: state.armInset,
+      armLength: state.armLength,
+      nodeScale: state.nodeScale,
+      nodeCount: state.nodeCount,
       titleScale: state.titleScale,
       moduleNameScale: state.moduleNameScale,
       markSize: state.markSize,
@@ -1520,8 +1577,9 @@
     opts.size = state.markSize;
     const svg = NSFLogo.buildMark(opts);
     if (bg === "white") {
-      const firstChild = svg.firstChild;
-      if (firstChild && firstChild.tagName === "rect") firstChild.setAttribute("fill", "#FFFFFF");
+      // the mark's first child is <defs>, so look the bg rect up directly
+      const bgRect = svg.querySelector(":scope > rect");
+      if (bgRect) bgRect.setAttribute("fill", "#FFFFFF");
     }
     return svg;
   }

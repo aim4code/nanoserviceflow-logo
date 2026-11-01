@@ -44,7 +44,7 @@ It was also an **experiment** to explore two things:
 - **Brand & module colors** — gradient start/end and module primary/secondary pickers.
 - **Icon picker** — built-in Lucide-style icons or paste custom `<path>` SVG.
 - **Geometry controls** — sliders for logo size, core module size, glow intensity
-  and reach, arm inset, and the two text sizes.
+  and reach, arm inset and length, mini-module size and count, and the two text sizes.
 - **Background variants** — Transparent / Dark / Light / White, each downloadable.
 - **Mark-only (symbol) grid** — the icon on its own across the same backgrounds.
 - **Export** — **Copy SVG** or **Download SVG** for any variant.
