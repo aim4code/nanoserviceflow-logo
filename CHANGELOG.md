@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   fixed), **mini-module size**, and **mini-module count**. With the new sliders at
   their defaults, the logo renders exactly as in 1.0.0.
 
+### Fixed
+
+- The white mark-only variant rendered on a light-grey background instead of
+  pure white.
+
 ## [1.0.0] - 2026-07-10
 
 ### Added

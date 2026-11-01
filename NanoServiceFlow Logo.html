@@ -1577,8 +1577,9 @@
     opts.size = state.markSize;
     const svg = NSFLogo.buildMark(opts);
     if (bg === "white") {
-      const firstChild = svg.firstChild;
-      if (firstChild && firstChild.tagName === "rect") firstChild.setAttribute("fill", "#FFFFFF");
+      // the mark's first child is <defs>, so look the bg rect up directly
+      const bgRect = svg.querySelector(":scope > rect");
+      if (bgRect) bgRect.setAttribute("fill", "#FFFFFF");
     }
     return svg;
   }
